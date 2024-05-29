@@ -1,33 +1,21 @@
 function Portscan {
-    $targetHost = Read-Host("Welches Geraet soll geprueft werden?")
-    $timeoutMilliseconds = 2500
+    $Ports = 1..65535 | ForEach-Object {
+        $port = $_
+        $ComputerName = "192.168.95.242"
 
-    $openPorts = ""
+        try {
+            $tcpClient = New-Object System.Net.Sockets.TcpClient
+            $asyncResult = $tcpClient.BeginConnect($ComputerName, $port, $null, $null)
 
-# Alle Ports von 1 bis 65535 scannen (parallel)
-$ports = 1..65535 | ForEach-Object {
-    $port = $_
-    try {
-        $tcpClient = New-Object System.Net.Sockets.TcpClient
-        $asyncResult = $tcpClient.BeginConnect($targetHost, $port, $null, $null)
-
-        # Verbindungsaufbau (Portscan)
-        if ($asyncResult.AsyncWaitHandle.WaitOne($timeoutMilliseconds, $false)) {
-            if ($tcpClient.Connected) {
-                Write-Output "Der Port $port auf $targetHost ist geöffnet."
+            if ($asyncResult.AsyncWaitHandle.WaitOne($timeoutMilliseconds, $false)) {
+                if ($tcpClient.Connected) {
+                    Write-Output "Der Port $port auf $ComputerName ist geöffnet."
+                }
             }
+
+            $tcpClient.Close()
+        } catch {
+            Write-Output "Der Port $port auf $ComputerName ist zu."
         }
-
-        $tcpClient.Close()
-    } catch {
-        # Fehler ignorieren (z. B. wenn der Port nicht erreichbar ist)
     }
-} -ArgumentList $targetHost
-
-# Ergebnisse anzeigen
-$ports | ForEach-Object {
-    Write-Host $_
-}
-
-    # Write-Host "Die folgenden Ports sind auf $targetHost geoeffnet: $openPorts"
 }
