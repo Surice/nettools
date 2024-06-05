@@ -1,3 +1,7 @@
+. ".\tools\Tool_ping.ps1"
+. ".\tools\Tool_portscan.ps1"
+. ".\tools\Tool_traceroute.ps1"
+
 $adapters = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
 $adapters | Format-Table -AutoSize -Property Name, InterfaceDescription, MacAddress, Status
 $adapternum = Read-Host "Wich Adapter should be used? "
