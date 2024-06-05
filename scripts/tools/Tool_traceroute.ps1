@@ -1,9 +1,8 @@
 function Traceroute {
     # target definieren
     $target = Read-Host("Welche route soll getraced werden (Hostname oder IP)")
-    
-    # Ping an den target senden
-    $traceResults = Test-NetConnection -TraceRoute $target -InformationLevel Quiet
-    
-    $traceResults | Format-Table -AutoSize
+    $maxHops = 30
+
+    $result = Test-NetConnection -TraceRoute $target -Hops $maxHops -InformationLevel Detailed
+    Write-Output $result
 }

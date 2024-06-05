@@ -1,21 +1,30 @@
+function Test-Port($ip, $port) {
+    $tcpClient = New-Object System.Net.Sockets.TcpClient
+    try {
+        $tcpClient.Connect($ip, $port)
+        $tcpClient.Close()
+        return $true
+    } catch {
+        return $false
+    }
+}
+
 function Portscan {
-    $Ports = 1..65535 | ForEach-Object {
-        $port = $_
-        $target = Read-Host "Which Target should be checked: "
+    $target = Read-Host "Which Target should be checked"
 
-        try {
-            $tcpClient = New-Object System.Net.Sockets.TcpClient
-            $asyncResult = $tcpClient.BeginConnect($target, $port, $null, $null)
-
-            if ($asyncResult.AsyncWaitHandle.WaitOne($timeoutMilliseconds, $false)) {
-                if ($tcpClient.Connected) {
-                    Write-Output "Der Port $port auf $target ist geöffnet."
-                }
-            }
-
-            $tcpClient.Close()
-        } catch {
-            Write-Output "Der Port $port auf $target ist zu."
+    $portRange = 1..1024
+    
+    $openPorts = @()
+    
+    foreach ($port in $portRange) {
+        if (Test-Port $target $port) {
+            $openPorts += $port
         }
+    }
+    
+    
+    Write-Host "Results for $($target):"
+    $openPorts | ForEach-Object {
+        Write-Host "Port $_ is opened."
     }
 }
