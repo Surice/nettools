@@ -1,3 +1,7 @@
+. ".\tools\Tool_ping.ps1"
+. ".\tools\Tool_portscan.ps1"
+. ".\tools\Tool_traceroute.ps1"
+
 while ($true) {
     $Tool = Read-Host("Welches Tool moechtest du verwenden?")
     
